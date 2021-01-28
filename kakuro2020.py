@@ -24,14 +24,32 @@ boton_actual = []
 borrar = False
 reloj = 0
 nivel = 1
-
+partida_guardada = []
 
 
 
 """Funcion cambio boton: esta funcion tiene como tarea hacer que el boton seleccionado para asiganarle un valor para hacer una jugada se cambie, si se le asigna un valor vacio se retorna un error."""
 def cambio_boton(Boton, jugada):
     global texto, lista_jugadas, boton_actual, borrar
+    jugada = []
+    jugada.append(Boton)
+    jugada.append(Boton["text"])
+    jugada.append(texto)
+    lista_jugadas.append(jugada)
+    #Con esta condicional se valida si lo que se quiere hacer es borrar una casilla o no
+    if borrar == True:
+        print(Boton["text"])
+        if validar_texto(Boton) == False:
+            messagebox.showinfo(title="ERROR", message="LA CASILLA NO SE PUEDE ELIMINAR")
+            borrar = False
 
+        else:
+            Boton.configure(text="")
+            borrar = False
+            print(borrar)
+        return
+
+    #Valida que se haya seleccionado un boton del panel antes de configurar el boton
     if texto == '':
         ''' MessageBox
         -showinfo(), showerror(), showwarning(), askquestion(), askcancel(), askyesno(), askretrycancel()'''
@@ -39,11 +57,8 @@ def cambio_boton(Boton, jugada):
     else:
         Boton.configure(text=texto)
         boton_actual.insert(0,Boton)
-        lista_jugadas.append([Boton, texto])
-        if borrar == True:
-            Boton.configure(text="")
-            borrar = False
-            print(borrar)
+    print(lista_jugadas)
+
 
 """Funcion panel de seleccion: esta funcion se encarga de darle a la variable global el color o el texto seleccionado, cada boton cada vez que se presione le asigna el color o valor que tenga en ese momento"""
 def PanelSeleccion(color_seleccionado, texto_seleccionado, boton_seguro, lista_botones):
@@ -66,6 +81,24 @@ def PanelSeleccion(color_seleccionado, texto_seleccionado, boton_seguro, lista_b
 
     cambio_boton(boton_seguro)
 
+def validar_texto(boton):
+    if boton["text"] == "":
+        return False
+    return True
+
+def deshacer_jugada(lista_jugadas, lista_eliminados):
+    global texto
+    lista_jugadas[-1][0].configure(text=lista_jugadas[-1][1])
+    lista_eliminados.append(lista_jugadas[-1])
+    lista_jugadas.pop()
+
+
+
+def rehacer_jugada(lista_jugadas, lista_eliminados):
+    lista_eliminados[-1][0].configure(text=lista_eliminados[-1][2])
+
+    lista_jugadas.append(lista_eliminados[-1])
+    lista_eliminados.pop()
 
 def ventana_de_juego(ventana_menu):
     ventana_menu.withdraw()
@@ -139,7 +172,7 @@ def ventana_de_juego(ventana_menu):
     lista_botones_de_juego = []
 
     #region COLUMNA 1
-    boton_juego1x1 = Button(ventana, width=4, height=2, command=lambda :cambio_boton(boton_juego1x1, texto))
+    boton_juego1x1 = Button(ventana, width=4, height=2,text="", command=lambda :cambio_boton(boton_juego1x1, texto))
     boton_juego1x1.place(x=100, y=100)
     lista_botones_de_juego.append(boton_juego1x1)
 
@@ -487,10 +520,10 @@ def ventana_de_juego(ventana_menu):
     boton_iniciar_juego = Button(ventana, width=15, height=2, text="INICIAR JUEGO", command=1)
     boton_iniciar_juego.place(x=100, y=500)
 
-    boton_deshacer_jugada = Button(ventana, width=15, height=2, text="DESHACER JUGADA", command=1)
+    boton_deshacer_jugada = Button(ventana, width=15, height=2, text="DESHACER JUGADA", command=lambda : deshacer_jugada(lista_jugadas, lista_eliminados))
     boton_deshacer_jugada.place(x=100, y=550)
 
-    boton_rehacer_jugada = Button(ventana, width=15, height=2, text="REHACER JUGADA", command=1)
+    boton_rehacer_jugada = Button(ventana, width=15, height=2, text="REHACER JUGADA", command= lambda : rehacer_jugada(lista_jugadas, lista_eliminados))
     boton_rehacer_jugada.place(x=100, y=600)
 
     boton_borrar_casilla = Button(ventana, width=15, height=2, text="BORRAR CASILLA", command=lambda: borrar_casilla())
@@ -505,10 +538,10 @@ def ventana_de_juego(ventana_menu):
     boton_top10 = Button(ventana, width=15, height=2, text="TOP 10", command=1)
     boton_top10.place(x=400, y=500)
 
-    boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO", command=1)
+    boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO", command=lambda : guardar_juego(lista_jugadas, ventana_menu, ventana))
     boton_guardar_juego.place(x=400, y=550)
 
-    boton_cargar_juego = Button(ventana, width=15, height=2, text="CARGAR JUEGO", command=1)
+    boton_cargar_juego = Button(ventana, width=15, height=2, text="CARGAR JUEGO", command= lambda : cargar_juego(partida_guardada))
     boton_cargar_juego.place(x=400, y=600)
     #endregion
 
@@ -518,6 +551,7 @@ def ventana_de_juego(ventana_menu):
 
 def pantalla_menu():
     # region creacion y configuracion de la ventana
+    global ventana_menu
     ventana_menu = Tk()
 
     # titulo
@@ -579,9 +613,22 @@ def acerca_de(ventana_menu):
 
     acerca.mainloop()
 
+def guardar_juego(lista_jugadas, venatana_menu, ventana_juego):
+    global partida_guardada
+    partida_guardada = lista_jugadas[:]
+    seleccion = messagebox.askyesno(title="SEGUIR JUGANDO", message="¿DESEA SEGUIR JUGANDO?")
+    if seleccion == False:
+        venatana_menu.state(newstate="normal")
+        ventana_juego.destroy()
+
+def cargar_juego(partida_guardada):
+    for i in partida_guardada:
+        valor = i[2]
+        i[0].configure(text=valor)
+
 def atras(ventana_destruir, ventanar_recuperar):
-    ventana_destruir.destroy()
     ventanar_recuperar.state(newstate="normal")
+    ventana_destruir.destroy()
 
 def configuracion(ventana_menu):
     ventana_menu.withdraw()
@@ -664,10 +711,38 @@ def borrar_casilla():
     print(borrar)
 
 def terminar_juego(ventana):
+    global ventana_menu
     seleccion = messagebox.askyesno(title="TERMINAR PARTIDA", message="¿DESEA TERMINAR EL JUEGO?")
     if seleccion == True:
         ventana.destroy()
-        ventana_de_juego()
+        ventana_de_juego(ventana_menu)
 
 pantalla_menu()
 
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ESPACIO PARA FUNCIONES DE PRUEBA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+lista = []
+def PanelSeleccionPrueba(color_seleccionado, texto_seleccionado):
+    global color, texto
+    color = color_seleccionado
+    texto = texto_seleccionado
+
+def impresion(boton, lista):
+    if boton["text"] == "":
+        print("PUTA MADRE")
+
+
+def pruebas():
+    ventana = Tk()
+    lista_panel_seleccion = []
+    boton0 = Button(ventana, width=5, height=2, bg='snow', text='1', activebackground='snow', command=lambda: PanelSeleccionPrueba('snow', '1'))
+    boton0.pack()
+
+
+    boton_juego = Button(ventana, width=4, height=2, command=lambda : print(validar_texto(boton_juego)))
+    boton_juego.pack()
+
+    ventana.mainloop()
+
+
+pruebas()
