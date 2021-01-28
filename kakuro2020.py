@@ -22,6 +22,8 @@ lista_jugadas = []
 lista_eliminados = []
 boton_actual = []
 borrar = False
+reloj = 0
+nivel = 1
 
 
 
@@ -29,8 +31,7 @@ borrar = False
 """Funcion cambio boton: esta funcion tiene como tarea hacer que el boton seleccionado para asiganarle un valor para hacer una jugada se cambie, si se le asigna un valor vacio se retorna un error."""
 def cambio_boton(Boton, jugada):
     global texto, lista_jugadas, boton_actual, borrar
-    if borrar == True:
-        Boton.configure(text="")
+
     if texto == '':
         ''' MessageBox
         -showinfo(), showerror(), showwarning(), askquestion(), askcancel(), askyesno(), askretrycancel()'''
@@ -39,7 +40,10 @@ def cambio_boton(Boton, jugada):
         Boton.configure(text=texto)
         boton_actual.insert(0,Boton)
         lista_jugadas.append([Boton, texto])
-
+        if borrar == True:
+            Boton.configure(text="")
+            borrar = False
+            print(borrar)
 
 """Funcion panel de seleccion: esta funcion se encarga de darle a la variable global el color o el texto seleccionado, cada boton cada vez que se presione le asigna el color o valor que tenga en ese momento"""
 def PanelSeleccion(color_seleccionado, texto_seleccionado, boton_seguro, lista_botones):
@@ -63,8 +67,12 @@ def PanelSeleccion(color_seleccionado, texto_seleccionado, boton_seguro, lista_b
     cambio_boton(boton_seguro)
 
 
-def ventana_de_juego():
+def ventana_de_juego(ventana_menu):
+    ventana_menu.withdraw()
+
     global texto
+
+
 
     #region creacion y configuracion de la ventana
     ventana = Tk()
@@ -73,46 +81,53 @@ def ventana_de_juego():
     ventana.title("KAKURO")
 
     # se le da tamaño a la ventana principal
-    ventana.geometry("900x900")
+    ventana.geometry("700x800")
     # color a la ventana principal
     ventana.configure(bg="gray70")
 
-    #imagen = PhotoImage(file="fondo_jugar.png")
-    #fondo = Label(ventana, image=imagen).place(x=0, y=0)
-    etiqueta = Label(ventana, text="KAKURO", bg="gray29",fg= "white", padx=100, pady=5, font="Helvetica 25",relief="solid").place(x=275, y=5)
+    etiqueta = Label(ventana, text="KAKURO", bg="gray29",fg= "white", padx=100, pady=5, font="Helvetica 25",relief="solid").place(x=200, y=5)
     # se agrega un icono personalizado
     #ventana.iconbitmap(r'C:\Users\Jhonny Diaz\PycharmProjects\Programa 2\icono.ico')
 
     ventana.resizable(False, False)
+
+    if nivel == 1:
+        lbl_nivel = Label(ventana, text="Nivel: Fácil", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
+
+    if nivel == 2:
+        lbl_nivel = Label(ventana, text="Nivel: Medio", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
+
+    if nivel == 3:
+        lbl_nivel = Label(ventana, text="Nivel: Difícil", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
     #endregion
 
     #region Panel de botones
     boton0 = Button(ventana, width=5, height=2, bg='snow', text='1', activebackground='snow',command=lambda: PanelSeleccion('snow', '1', boton0, lista_panel_de_seleccion))
-    boton0.place(x=850, y=70)
+    boton0.place(x=600, y=70)
 
     boton1 = Button(ventana, width=5, height=2, bg='snow', text='2', activebackground='snow',command=lambda: PanelSeleccion('snow', '2', boton1, lista_panel_de_seleccion))
-    boton1.place(x=850, y=120)
+    boton1.place(x=600, y=120)
 
     boton2 = Button(ventana, width=5, height=2, bg='snow', text='3', activebackground='snow',command=lambda: PanelSeleccion('snow', '3', boton2, lista_panel_de_seleccion))
-    boton2.place(x=850, y=170)
+    boton2.place(x=600, y=170)
 
     boton3 = Button(ventana, width=5, height=2, bg='snow', text='4', activebackground='snow',command=lambda: PanelSeleccion('snow', '4',boton3, lista_panel_de_seleccion))
-    boton3.place(x=850, y=220)
+    boton3.place(x=600, y=220)
 
     boton4 = Button(ventana, width=5, height=2, bg='snow', text='5', activebackground='snow',command=lambda: PanelSeleccion('snow', '5',boton4, lista_panel_de_seleccion))
-    boton4.place(x=850, y=270)
+    boton4.place(x=600, y=270)
 
     boton5 = Button(ventana, width=5, height=2, bg='snow', text='6', activebackground='snow',command=lambda: PanelSeleccion('snow', '6',boton5, lista_panel_de_seleccion))
-    boton5.place(x=850, y=320)
+    boton5.place(x=600, y=320)
 
     boton6 = Button(ventana, width=5, height=2, bg='snow', text='7', activebackground='snow',command=lambda: PanelSeleccion('snow', '7',boton6, lista_panel_de_seleccion))
-    boton6.place(x=850, y=370)
+    boton6.place(x=600, y=370)
 
     boton7 = Button(ventana, width=5, height=2, bg='snow', text='8', activebackground='snow', command=lambda: PanelSeleccion('snow', '8',boton7, lista_panel_de_seleccion))
-    boton7.place(x=850, y=420)
+    boton7.place(x=600, y=420)
 
     boton8 = Button(ventana, width=5, height=2, bg='snow', text='9', activebackground='snow',command=lambda: PanelSeleccion('snow', '9',boton8, lista_panel_de_seleccion ))
-    boton8.place(x=850, y=470)
+    boton8.place(x=600, y=470)
 
     #Creacion de una lista global con los botones para que se mantenga un color sobre el boton que se tiene seleccionado
     global lista_panel_de_seleccion
@@ -468,14 +483,173 @@ def ventana_de_juego():
 
     #endregion
 
-    boton_borrar_juego = Button(ventana, width=15, height=2,text="BORRAR JUEGO", command= lambda : borrar_juego(lista_botones_de_juego))
-    boton_borrar_juego.place(x=600,y=600)
+    #region Botones principales
+    boton_iniciar_juego = Button(ventana, width=15, height=2, text="INICIAR JUEGO", command=1)
+    boton_iniciar_juego.place(x=100, y=500)
 
-    boton_borrar_casilla = Button(ventana, width=15, height=2,text="BORRAR CASILLA", command= lambda : borrar_casilla())
-    boton_borrar_casilla.place(x=400,y=600)
+    boton_deshacer_jugada = Button(ventana, width=15, height=2, text="DESHACER JUGADA", command=1)
+    boton_deshacer_jugada.place(x=100, y=550)
+
+    boton_rehacer_jugada = Button(ventana, width=15, height=2, text="REHACER JUGADA", command=1)
+    boton_rehacer_jugada.place(x=100, y=600)
+
+    boton_borrar_casilla = Button(ventana, width=15, height=2, text="BORRAR CASILLA", command=lambda: borrar_casilla())
+    boton_borrar_casilla.place(x=250, y=500)
+
+    boton_borrar_juego = Button(ventana, width=15, height=2,text="BORRAR JUEGO", command= lambda : borrar_juego(lista_botones_de_juego))
+    boton_borrar_juego.place(x=250,y=550)
+
+    boton_terminar_partida = Button(ventana, width=15, height=2,text="TERMINAR JUEGO", command= lambda : terminar_juego(ventana))
+    boton_terminar_partida.place(x=250,y=600)
+
+    boton_top10 = Button(ventana, width=15, height=2, text="TOP 10", command=1)
+    boton_top10.place(x=400, y=500)
+
+    boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO", command=1)
+    boton_guardar_juego.place(x=400, y=550)
+
+    boton_cargar_juego = Button(ventana, width=15, height=2, text="CARGAR JUEGO", command=1)
+    boton_cargar_juego.place(x=400, y=600)
+    #endregion
+
+
 
     ventana.mainloop()
 
+def pantalla_menu():
+    # region creacion y configuracion de la ventana
+    ventana_menu = Tk()
+
+    # titulo
+    ventana_menu.title("KAKURO")
+
+    # se le da tamaño a la ventana principal
+    ventana_menu.geometry("500x600")
+    # color a la ventana principal
+    ventana_menu.configure(bg="gray70")
+
+    etiqueta = Label(ventana_menu, text="KAKURO", bg="gray29", fg="white", padx=100, pady=5, font="Helvetica 25", relief="solid").place(x=85, y=5)
+
+    #endregion
+
+    #region Botones de opcion
+    boton_iniciar_juego = Button(ventana_menu, width=15, height=2,text="INICIAR JUEGO",bd=15, command= lambda : ventana_de_juego(ventana_menu))
+    boton_iniciar_juego.place(x=200,y=100)
+
+
+    boton_configuracion = Button(ventana_menu, width=15, height=2,text="CONFIGURACION",bd=15, command= lambda : configuracion(ventana_menu))
+    boton_configuracion.place(x=200,y=200)
+
+    boton_ayuda = Button(ventana_menu, width=15, height=2,text="AYUDA",bd=15, command= 1)
+    boton_ayuda.place(x=200,y=300)
+
+    boton_acerca_de = Button(ventana_menu, width=15, height=2,text="ACERCA DE:",bd=15, command= lambda :acerca_de(ventana_menu))
+    boton_acerca_de.place(x=200,y=400)
+
+    boton_salir = Button(ventana_menu, width=15, height=2,text="SALIR",bd=15, command= lambda : salir(ventana_menu))
+    boton_salir.place(x=200,y=500)
+    #endregion
+
+    ventana_menu.mainloop()
+
+def acerca_de(ventana_menu):
+    ventana_menu.withdraw()
+
+    acerca = Tk()
+    # titulo
+    ventana_menu.title("KAKURO")
+
+    # se le da tamaño a la ventana principal
+    ventana_menu.geometry("700x800")
+    # color a la ventana principal
+    ventana_menu.configure(bg="gray70")
+    # Titulo
+
+
+    lbl = Label(acerca, text="Acerca De", bg="green", fg="white", font=("Aharoni", 30), \
+                bd=1, relief="solid").pack()
+
+    lbl2 = Label(acerca,
+                 text="Nombre del Programa: KAKURO\n Version: 1.0\n Fecha de creacion: 27/01/2021 \n Autor del Programa: Jhonny Andrés Díaz Coto",
+                 bg="white", fg="Black", font=("Aharoni", 30)).pack()
+
+    # Boton para salir
+    btn5 = Button(acerca, bitmap="error", command= lambda : atras(acerca, ventana_menu))
+    btn5.place(x=800, y=10)
+
+    acerca.mainloop()
+
+def atras(ventana_destruir, ventanar_recuperar):
+    ventana_destruir.destroy()
+    ventanar_recuperar.state(newstate="normal")
+
+def configuracion(ventana_menu):
+    ventana_menu.withdraw()
+
+    # region creacion y configuracion de la ventana
+    ventana = Tk()
+
+    # titulo
+    ventana.title("CONFIGURACION")
+
+    # se le da tamaño a la ventana principal
+    ventana.geometry("565x450")
+    # color a la ventana principal
+    ventana.configure(bg="gray70")
+
+    etiqueta = Label(ventana, text="KAKURO", bg="gray29",fg= "white", padx=100, pady=5, font="Helvetica 25",relief="solid").place(x=120, y=5)
+
+    ventana.resizable(False, False)
+
+    #endregion
+
+
+    # region dificultad
+    label_dificultad = Label(ventana, text="Nivel de dificultad:", bg="gray29", fg="white", relief="solid").place(x=20, y=100)
+
+    nivel = IntVar(ventana)
+
+    facil = Radiobutton(ventana, text="Fácil (1 hora)", bg="gray70", variable=nivel, value=1)
+    facil.place(x=20, y=140)
+    facil.select()
+
+    medio = Radiobutton(ventana, text="Medio (45 minutos)", bg="gray70", variable=nivel, value=2)
+    medio.place(x=20, y=160)
+
+    dificil = Radiobutton(ventana, text="Difícil (30 minutos)", bg="gray70", variable=nivel, value=3)
+    dificil.place(x=20, y=180)
+    # endregion
+
+    # region reloj
+    label_reloj = Label(ventana, text="Reloj:", relief="solid", bg="gray29",fg="white").place(x=450, y=100)
+
+    reloj = IntVar(ventana)
+
+    si = Radiobutton(ventana, text="Si", bg="gray70", variable=reloj, value=1)
+    si.place(x=400, y=120)
+
+    no = Radiobutton(ventana, text="No", bg="gray70", variable=reloj, value=2)
+    no.place(x=400, y=140)
+    no.select()
+
+    timer = Radiobutton(ventana, text="Timer", bg="gray70", variable=reloj, value=3)
+    timer.place(x=400, y=160)
+
+    #endregion
+
+    agregar_configuraciones = Button(ventana, text="ACEPTAR", bg="gray29", relief="solid", fg="white", command=lambda: agrega_configuracion(ventana_menu, ventana, nivel.get()))
+    agregar_configuraciones.place(x=245, y=250)
+    ventana.mainloop()
+
+def agrega_configuracion(ventana_menu, ventana, nivel):
+    ventana_menu.state(newstate="normal")
+    messagebox.showinfo(title="CONFIGURACION", message="LA CONFIGURACION HA SIDO REGISTRADA")
+    ventana.destroy()
+
+def salir(ventana):
+    seleccion = messagebox.askyesno(title="SALIR", message="¿DESEA SALIR DEL JUEGO?")
+    if seleccion == True:
+        ventana.destroy()
 
 def borrar_juego(lista_botones):
     seleccion = messagebox.askyesno(title="BORRAR PARTIDA", message="¿DESEA BORRAR LA PARTIDA?")
@@ -487,11 +661,13 @@ def borrar_casilla():
     global borrar
     borrar = True
     messagebox.showinfo(title="CONFIGURACION", message="SELECCIONE LA CASILLA QUE DESEA ELIMINAR")
+    print(borrar)
 
+def terminar_juego(ventana):
+    seleccion = messagebox.askyesno(title="TERMINAR PARTIDA", message="¿DESEA TERMINAR EL JUEGO?")
+    if seleccion == True:
+        ventana.destroy()
+        ventana_de_juego()
 
-
-
-
-
-ventana_de_juego()
+pantalla_menu()
 
