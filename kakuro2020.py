@@ -25,6 +25,8 @@ borrar = False
 reloj = 0
 nivel = 1
 partida_guardada = []
+botones_por_columna = []
+botones_por_fila = []
 
 
 
@@ -35,7 +37,10 @@ def cambio_boton(Boton, jugada):
     jugada.append(Boton)
     jugada.append(Boton["text"])
     jugada.append(texto)
-    lista_jugadas.append(jugada)
+    if jugada not in lista_jugadas:
+        lista_jugadas.append(jugada)
+
+
     #Con esta condicional se valida si lo que se quiere hacer es borrar una casilla o no
     if borrar == True:
         print(Boton["text"])
@@ -92,7 +97,10 @@ def deshacer_jugada(lista_jugadas, lista_eliminados):
     lista_eliminados.append(lista_jugadas[-1])
     lista_jugadas.pop()
 
+"""Funcion ayuda manual: esta funcion muestra el manual de usuario donde se explica como funciona el juego."""
+def ayuda_manual():
 
+    wb.open_new(r"C:\Users\Jhonny Diaz\PycharmProjects\Programa 3 Kakuro\manual_de_usuario_kakuro2020.pdf")
 
 def rehacer_jugada(lista_jugadas, lista_eliminados):
     lista_eliminados[-1][0].configure(text=lista_eliminados[-1][2])
@@ -171,54 +179,56 @@ def ventana_de_juego(ventana_menu):
     global lista_botones_de_juego
     lista_botones_de_juego = []
 
+
+
     #region COLUMNA 1
-    boton_juego1x1 = Button(ventana, width=4, height=2,text="", command=lambda :cambio_boton(boton_juego1x1, texto))
+    boton_juego1x1 = Button(ventana, width=4,bg="black",state="disabled", height=2,text="", command=lambda :cambio_boton(boton_juego1x1, texto))
     boton_juego1x1.place(x=100, y=100)
     lista_botones_de_juego.append(boton_juego1x1)
 
-    boton_juego1x2 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x2, texto))
+    boton_juego1x2 = Button(ventana, width=4, height=2,bg="black",state="disabled", command=lambda: cambio_boton(boton_juego1x2, texto))
     boton_juego1x2.place(x=100, y=142)
     lista_botones_de_juego.append(boton_juego1x2)
 
-    boton_juego1x3 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x3, texto))
+    boton_juego1x3 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego1x3, texto))
     boton_juego1x3.place(x=100, y=184)
     lista_botones_de_juego.append(boton_juego1x3)
 
-    boton_juego1x4 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x4, texto))
+    boton_juego1x4 = Button(ventana, width=4, height=2, bg="black",state="disabled", text="12",fg="white", command=lambda: cambio_boton(boton_juego1x4, texto))
     boton_juego1x4.place(x=100, y=226)
     lista_botones_de_juego.append(boton_juego1x4)
 
-    boton_juego1x5 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x5, texto))
+    boton_juego1x5 = Button(ventana, width=4, height=2, bg="black",state="disabled", text="3",fg="white",command=lambda: cambio_boton(boton_juego1x5, texto))
     boton_juego1x5.place(x=100, y=268)
     lista_botones_de_juego.append(boton_juego1x5)
 
-    boton_juego1x6 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x6, texto))
+    boton_juego1x6 = Button(ventana, width=4, height=2, bg="black",state="disabled", text="17",fg="white", command=lambda: cambio_boton(boton_juego1x6, texto))
     boton_juego1x6.place(x=100, y=310)
     lista_botones_de_juego.append(boton_juego1x6)
 
-    boton_juego1x7 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x7, texto))
+    boton_juego1x7 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego1x7, texto))
     boton_juego1x7.place(x=100, y=352)
     lista_botones_de_juego.append(boton_juego1x7)
 
-    boton_juego1x8 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x8, texto))
+    boton_juego1x8 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="28",fg="white", command=lambda: cambio_boton(boton_juego1x8, texto))
     boton_juego1x8.place(x=100, y=394)
     lista_botones_de_juego.append(boton_juego1x8)
 
-    boton_juego1x9 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego1x9, texto))
+    boton_juego1x9 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="6",fg="white", command=lambda: cambio_boton(boton_juego1x9, texto))
     boton_juego1x9.place(x=100, y=436)
     lista_botones_de_juego.append(boton_juego1x9)
     #endregion
 
     # region COLUMNA 2
-    boton_juego2x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego2x1, texto))
+    boton_juego2x1 = Button(ventana, width=4, height=2,bg="black",state="disabled", command=lambda: cambio_boton(boton_juego2x1, texto))
     boton_juego2x1.place(x=140, y=100)
     lista_botones_de_juego.append(boton_juego2x1)
 
-    boton_juego2x2 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego2x2, texto))
+    boton_juego2x2 = Button(ventana, width=4, height=2,bg="black",state="disabled", text="14\n     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x2, texto))
     boton_juego2x2.place(x=140, y=142)
     lista_botones_de_juego.append(boton_juego2x2)
 
-    boton_juego2x3 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego2x3, texto))
+    boton_juego2x3 = Button(ventana, width=4, height=2,bg="black",state="disabled", text="36\n7     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x3, texto))
     boton_juego2x3.place(x=140, y=184)
     lista_botones_de_juego.append(boton_juego2x3)
 
@@ -234,7 +244,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego2x6.place(x=140, y=310)
     lista_botones_de_juego.append(boton_juego2x6)
 
-    boton_juego2x7 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego2x7, texto))
+    boton_juego2x7 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   \n7     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x7, texto))
     boton_juego2x7.place(x=140, y=352)
     lista_botones_de_juego.append(boton_juego2x7)
 
@@ -248,7 +258,7 @@ def ventana_de_juego(ventana_menu):
     # endregion
 
     # region COLUMNA 3
-    boton_juego3x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego3x1, texto))
+    boton_juego3x1 = Button(ventana, width=4, height=2,bg="black",state="disabled", text="   \n19     ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego3x1, texto))
     boton_juego3x1.place(x=180, y=100)
     lista_botones_de_juego.append(boton_juego3x1)
 
@@ -272,7 +282,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego3x6.place(x=180, y=310)
     lista_botones_de_juego.append(boton_juego3x6)
 
-    boton_juego3x7 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego3x7, texto))
+    boton_juego3x7 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="13\n7     ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego3x7, texto))
     boton_juego3x7.place(x=180, y=352)
     lista_botones_de_juego.append(boton_juego3x7)
 
@@ -286,7 +296,7 @@ def ventana_de_juego(ventana_menu):
     # endregion
 
     # region COLUMNA 4
-    boton_juego4x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego4x1, texto))
+    boton_juego4x1 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="   \n12     ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego4x1, texto))
     boton_juego4x1.place(x=220, y=100)
     lista_botones_de_juego.append(boton_juego4x1)
 
@@ -298,11 +308,11 @@ def ventana_de_juego(ventana_menu):
     boton_juego4x3.place(x=220, y=184)
     lista_botones_de_juego.append(boton_juego4x3)
 
-    boton_juego4x4 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego4x4, texto))
+    boton_juego4x4 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="10\n       ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego4x4, texto))
     boton_juego4x4.place(x=220, y=226)
     lista_botones_de_juego.append(boton_juego4x4)
 
-    boton_juego4x5 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego4x5, texto))
+    boton_juego4x5 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="    \n20     ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego4x5, texto))
     boton_juego4x5.place(x=220, y=268)
     lista_botones_de_juego.append(boton_juego4x5)
 
@@ -318,17 +328,17 @@ def ventana_de_juego(ventana_menu):
     boton_juego4x8.place(x=220, y=394)
     lista_botones_de_juego.append(boton_juego4x8)
 
-    boton_juego4x9 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego4x9, texto))
+    boton_juego4x9 = Button(ventana, width=4, height=2, bg="black",state="disabled",command=lambda: cambio_boton(boton_juego4x9, texto))
     boton_juego4x9.place(x=220, y=436)
     lista_botones_de_juego.append(boton_juego4x9)
     # endregion
 
     # region COLUMNA 5
-    boton_juego5x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego5x1, texto))
+    boton_juego5x1 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego5x1, texto))
     boton_juego5x1.place(x=260, y=100)
     lista_botones_de_juego.append(boton_juego5x1)
 
-    boton_juego5x2 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego5x2, texto))
+    boton_juego5x2 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="    \n4     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego5x2, texto))
     boton_juego5x2.place(x=260, y=142)
     lista_botones_de_juego.append(boton_juego5x2)
 
@@ -340,7 +350,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego5x4.place(x=260, y=226)
     lista_botones_de_juego.append(boton_juego5x4)
 
-    boton_juego5x5 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego5x5, texto))
+    boton_juego5x5 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="20\n11     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego5x5, texto))
     boton_juego5x5.place(x=260, y=268)
     lista_botones_de_juego.append(boton_juego5x5)
 
@@ -356,17 +366,17 @@ def ventana_de_juego(ventana_menu):
     boton_juego5x8.place(x=260, y=394)
     lista_botones_de_juego.append(boton_juego5x8)
 
-    boton_juego5x9 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego5x9, texto))
+    boton_juego5x9 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego5x9, texto))
     boton_juego5x9.place(x=260, y=436)
     lista_botones_de_juego.append(boton_juego5x9)
     # endregion
 
     # region COLUMNA 6
-    boton_juego6x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego6x1, texto))
+    boton_juego6x1 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego6x1, texto))
     boton_juego6x1.place(x=300, y=100)
     lista_botones_de_juego.append(boton_juego6x1)
 
-    boton_juego6x2 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego6x2, texto))
+    boton_juego6x2 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="    \n11     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego6x2, texto))
     boton_juego6x2.place(x=300, y=142)
     lista_botones_de_juego.append(boton_juego6x2)
 
@@ -382,7 +392,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego6x5.place(x=300, y=268)
     lista_botones_de_juego.append(boton_juego6x5)
 
-    boton_juego6x6 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego6x6, texto))
+    boton_juego6x6 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="    \n8     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego6x6, texto))
     boton_juego6x6.place(x=300, y=310)
     lista_botones_de_juego.append(boton_juego6x6)
 
@@ -394,17 +404,17 @@ def ventana_de_juego(ventana_menu):
     boton_juego6x8.place(x=300, y=394)
     lista_botones_de_juego.append(boton_juego6x8)
 
-    boton_juego6x9 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego6x9, texto))
+    boton_juego6x9 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   8\n       ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego6x9, texto))
     boton_juego6x9.place(x=300, y=436)
     lista_botones_de_juego.append(boton_juego6x9)
     # endregion
 
     # region COLUMNA 7
-    boton_juego7x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego7x1, texto))
+    boton_juego7x1 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego7x1, texto))
     boton_juego7x1.place(x=340, y=100)
     lista_botones_de_juego.append(boton_juego7x1)
 
-    boton_juego7x2 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego7x2, texto))
+    boton_juego7x2 = Button(ventana, width=4, height=2,bg="black",state="disabled",text="   4\n17     ",fg="white",justify="right",  command=lambda: cambio_boton(boton_juego7x2, texto))
     boton_juego7x2.place(x=340, y=142)
     lista_botones_de_juego.append(boton_juego7x2)
 
@@ -420,11 +430,11 @@ def ventana_de_juego(ventana_menu):
     boton_juego7x5.place(x=340, y=268)
     lista_botones_de_juego.append(boton_juego7x5)
 
-    boton_juego7x6 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego7x6, texto))
+    boton_juego7x6 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="    6\n     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego7x6, texto))
     boton_juego7x6.place(x=340, y=310)
     lista_botones_de_juego.append(boton_juego7x6)
 
-    boton_juego7x7 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego7x7, texto))
+    boton_juego7x7 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   10\n4     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego7x7, texto))
     boton_juego7x7.place(x=340, y=352)
     lista_botones_de_juego.append(boton_juego7x7)
 
@@ -438,7 +448,7 @@ def ventana_de_juego(ventana_menu):
     # endregion
 
     # region COLUMNA 8
-    boton_juego8x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego8x1, texto))
+    boton_juego8x1 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="    \n7     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego8x1, texto))
     boton_juego8x1.place(x=380, y=100)
     lista_botones_de_juego.append(boton_juego8x1)
 
@@ -450,7 +460,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego8x3.place(x=380, y=184)
     lista_botones_de_juego.append(boton_juego8x3)
 
-    boton_juego8x4 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego8x4, texto))
+    boton_juego8x4 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   \n25     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego8x4, texto))
     boton_juego8x4.place(x=380, y=226)
     lista_botones_de_juego.append(boton_juego8x4)
 
@@ -476,7 +486,7 @@ def ventana_de_juego(ventana_menu):
     # endregion
 
     # region COLUMNA 9
-    boton_juego9x1 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego9x1, texto))
+    boton_juego9x1 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   \n10     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego9x1, texto))
     boton_juego9x1.place(x=420, y=100)
     lista_botones_de_juego.append(boton_juego9x1)
 
@@ -484,11 +494,11 @@ def ventana_de_juego(ventana_menu):
     boton_juego9x2.place(x=420, y=142)
     lista_botones_de_juego.append(boton_juego9x2)
 
-    boton_juego9x3 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego9x3, texto))
+    boton_juego9x3 = Button(ventana, width=4, height=2,  command=lambda: cambio_boton(boton_juego9x3, texto))
     boton_juego9x3.place(x=420, y=184)
     lista_botones_de_juego.append(boton_juego9x3)
 
-    boton_juego9x4 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego9x4, texto))
+    boton_juego9x4 = Button(ventana, width=4, height=2, bg="black",state="disabled", text="   \n14     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego9x4, texto))
     boton_juego9x4.place(x=420, y=226)
     lista_botones_de_juego.append(boton_juego9x4)
 
@@ -504,11 +514,11 @@ def ventana_de_juego(ventana_menu):
     boton_juego9x7.place(x=420, y=352)
     lista_botones_de_juego.append(boton_juego9x7)
 
-    boton_juego9x8 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego9x8, texto))
+    boton_juego9x8 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego9x8, texto))
     boton_juego9x8.place(x=420, y=394)
     lista_botones_de_juego.append(boton_juego9x8)
 
-    boton_juego9x9 = Button(ventana, width=4, height=2, command=lambda: cambio_boton(boton_juego9x9, texto))
+    boton_juego9x9 = Button(ventana, width=4, height=2, bg="black",state="disabled", command=lambda: cambio_boton(boton_juego9x9, texto))
     boton_juego9x9.place(x=420, y=436)
     lista_botones_de_juego.append(boton_juego9x9)
     # endregion
@@ -574,7 +584,7 @@ def pantalla_menu():
     boton_configuracion = Button(ventana_menu, width=15, height=2,text="CONFIGURACION",bd=15, command= lambda : configuracion(ventana_menu))
     boton_configuracion.place(x=200,y=200)
 
-    boton_ayuda = Button(ventana_menu, width=15, height=2,text="AYUDA",bd=15, command= 1)
+    boton_ayuda = Button(ventana_menu, width=15, height=2,text="AYUDA",bd=15, command= lambda : ayuda_manual())
     boton_ayuda.place(x=200,y=300)
 
     boton_acerca_de = Button(ventana_menu, width=15, height=2,text="ACERCA DE:",bd=15, command= lambda :acerca_de(ventana_menu))
@@ -614,14 +624,17 @@ def acerca_de(ventana_menu):
     acerca.mainloop()
 
 def guardar_juego(lista_jugadas, venatana_menu, ventana_juego):
-    global partida_guardada
+    global partida_guardada, lista_eliminados
     partida_guardada = lista_jugadas[:]
     seleccion = messagebox.askyesno(title="SEGUIR JUGANDO", message="¿DESEA SEGUIR JUGANDO?")
     if seleccion == False:
+        lista_jugadas = []
+        lista_eliminados = []
         venatana_menu.state(newstate="normal")
         ventana_juego.destroy()
 
 def cargar_juego(partida_guardada):
+    global lista_botones_de_juego
     for i in partida_guardada:
         valor = i[2]
         i[0].configure(text=valor)
@@ -699,8 +712,11 @@ def salir(ventana):
         ventana.destroy()
 
 def borrar_juego(lista_botones):
+    global lista_jugadas, lista_eliminados
     seleccion = messagebox.askyesno(title="BORRAR PARTIDA", message="¿DESEA BORRAR LA PARTIDA?")
     if seleccion == True:
+        lista_jugadas = []
+        lista_eliminados = []
         for i in lista_botones:
             i.configure(text="")
 
