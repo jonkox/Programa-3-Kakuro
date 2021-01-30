@@ -23,12 +23,172 @@ lista_eliminados = []
 boton_actual = []
 borrar = False
 reloj = 0
-nivel = 1
+nivel = 0
 partida_guardada = []
 botones_por_columna = []
 botones_por_fila = []
+juego_iniciado = False
+nombre_jugador = ""
+horas = ""
+minutos = ""
+segundos = ""
 
 
+def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borrar_juego, terminar_juego, top10, guardar_juego, validar_nombre, entrada):
+    global reloj, juego_iniciado
+
+    juego_iniciado = True
+    deshacer_jugada.configure(state="normal")
+    rehacer_jugada.configure(state="normal")
+    borrar_casilla.configure(state="normal")
+    borrar_juego.configure(state="normal")
+    terminar_juego.configure(state="normal")
+    top10.configure(state="normal")
+    guardar_juego.configure(state="normal")
+    validar_nombre.configure(state="disabled")
+    entrada.configure(state="disabled")
+
+    def crono():
+        def iniciar(h=0,m=0,s=0):
+            global proceso
+
+            #Validacion para el tiempo
+            if s > 59:
+                s = 0
+                m += 1
+                if m > 59:
+                    m = 0
+                    h += 1
+                    if h == 1:
+                        messagebox.showinfo(message="SE HA ACABADO SU TIEMPO")
+                        ventana_menu.state(newstate="normal")
+                        ventana.destroy()
+                        juego_iniciado = False
+                        contador_jugada = 1
+
+
+            #Se muestra el tiempo
+            time['text'] = str(h) + ":" + str(m) + ":" + str (s)
+
+
+            proceso = time.after(1000, iniciar, h, m , (s + 1))
+            print(horas.get())
+            print(minutos.get())
+            print(segundos.get())
+
+            if str(horas.get()) == "" and str(minutos.get()) == "" and str(segundos.get()) == "":
+
+                if nivel.get() == 1:
+
+                    tiempo = str(1) + ":" + str(0) + ":" + str(0)
+                    print(tiempo)
+                    if time["text"] == tiempo:
+                        parar()
+                        messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
+
+                if nivel.get() == 2:
+
+                    tiempo = str(0) + ":" + str(45) + ":" + str(0)
+                    print(tiempo)
+                    if time["text"] == tiempo:
+                        parar()
+                        messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
+
+                if nivel.get() == 3:
+
+                    tiempo = str(0) + ":" + str(30) + ":" + str(0)
+                    print(tiempo)
+                    if time["text"] == tiempo:
+                        parar()
+                        messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
+            else:
+                tiempo = str(horas.get()) + ":" + str(minutos.get()) + ":" + str(segundos.get())
+                print(tiempo)
+                if time["text"] == tiempo:
+                    parar()
+                    messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
+
+
+        def parar():
+            global proceso
+            time.after_cancel(proceso)
+
+        time = Label(ventana, fg='red', width=10, font=("", "18"))
+        time.place(x=20, y=750)
+
+        iniciar()
+
+    def timer():
+        if str(horas.get()) == "" and str(minutos.get()) == "" and str(segundos.get()) == "":
+            if nivel.get() == 1:
+                h=1
+                m=0
+                s=0
+
+
+            if nivel.get() == 2:
+                h = 0
+                m = 45
+                s = 0
+
+
+            if nivel.get() == 3:
+                h = 0
+                m = 30
+                s = 0
+        else:
+            h = int(horas.get())
+            m = int(minutos.get())
+            s = int(segundos.get())
+
+        def iniciar(h,m,s):
+            global proceso
+            if h == 0 and m == 0 and s == 0:
+
+                messagebox.showinfo(message="SE HA ACABADO SU TIEMPO")
+                ventana_menu.state(newstate="normal")
+                ventana.destroy()
+                juego_iniciado = False
+                contador_jugada = 1
+
+
+            #Validacion para el tiempo
+            if s == 0:
+                s = 59
+                if m != 0:
+                    m -= 1
+                if m == 0 and h == 0:
+                    pass
+                if m== 0 and h != 0:
+                    m = 59
+                    h -= 1
+
+
+
+            #Se muestra el tiempo
+            time['text'] = str(h) + ":" + str(m) + ":" + str (s)
+
+
+            proceso = time.after(1000, iniciar, h, m , (s - 1))
+
+
+
+
+        def parar():
+            global proceso
+            time.after_cancel(proceso)
+
+        time = Label(ventana, fg='red', width=10, font=("", "18"))
+        time.place(x=20, y=750)
+
+        iniciar(h,m,s)
+
+
+    if reloj.get() == 1:
+        crono()
+
+    if reloj.get() == 3:
+        timer()
 
 """Funcion cambio boton: esta funcion tiene como tarea hacer que el boton seleccionado para asiganarle un valor para hacer una jugada se cambie, si se le asigna un valor vacio se retorna un error."""
 def cambio_boton(Boton, jugada):
@@ -111,7 +271,7 @@ def rehacer_jugada(lista_jugadas, lista_eliminados):
 def ventana_de_juego(ventana_menu):
     ventana_menu.withdraw()
 
-    global texto
+    global texto, nombre_jugador
 
 
 
@@ -132,13 +292,13 @@ def ventana_de_juego(ventana_menu):
 
     ventana.resizable(False, False)
 
-    if nivel == 1:
+    if nivel.get() == 1:
         lbl_nivel = Label(ventana, text="Nivel: Fácil", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
 
-    if nivel == 2:
+    if nivel.get() == 2:
         lbl_nivel = Label(ventana, text="Nivel: Medio", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
 
-    if nivel == 3:
+    if nivel.get() == 3:
         lbl_nivel = Label(ventana, text="Nivel: Difícil", bg="gray29",fg= "white", padx=10, pady=5, font="Helvetica 25",relief="solid").place(x=100, y=650)
     #endregion
 
@@ -526,35 +686,43 @@ def ventana_de_juego(ventana_menu):
 
     #endregion
 
+
     #region Botones principales
-    boton_iniciar_juego = Button(ventana, width=15, height=2, text="INICIAR JUEGO", command=1)
+    boton_iniciar_juego = Button(ventana, width=15, height=2, text="INICIAR JUEGO", state="disabled",command= lambda : iniciar_juego(ventana, boton_deshacer_jugada, boton_rehacer_jugada, boton_borrar_casilla, boton_borrar_juego, boton_terminar_partida, boton_top10, boton_guardar_juego, evaluar_nombre, entrada_nombre))
     boton_iniciar_juego.place(x=100, y=500)
 
-    boton_deshacer_jugada = Button(ventana, width=15, height=2, text="DESHACER JUGADA", command=lambda : deshacer_jugada(lista_jugadas, lista_eliminados))
+    boton_deshacer_jugada = Button(ventana, width=15, height=2, text="DESHACER JUGADA", state="disabled", command=lambda : deshacer_jugada(lista_jugadas, lista_eliminados))
     boton_deshacer_jugada.place(x=100, y=550)
 
-    boton_rehacer_jugada = Button(ventana, width=15, height=2, text="REHACER JUGADA", command= lambda : rehacer_jugada(lista_jugadas, lista_eliminados))
+    boton_rehacer_jugada = Button(ventana, width=15, height=2, text="REHACER JUGADA", state="disabled", command= lambda : rehacer_jugada(lista_jugadas, lista_eliminados))
     boton_rehacer_jugada.place(x=100, y=600)
 
-    boton_borrar_casilla = Button(ventana, width=15, height=2, text="BORRAR CASILLA", command=lambda: borrar_casilla())
+    boton_borrar_casilla = Button(ventana, width=15, height=2, text="BORRAR CASILLA", state="disabled", command=lambda: borrar_casilla())
     boton_borrar_casilla.place(x=250, y=500)
 
-    boton_borrar_juego = Button(ventana, width=15, height=2,text="BORRAR JUEGO", command= lambda : borrar_juego(lista_botones_de_juego))
+    boton_borrar_juego = Button(ventana, width=15, height=2,text="BORRAR JUEGO", state="disabled", command= lambda : borrar_juego(lista_botones_de_juego))
     boton_borrar_juego.place(x=250,y=550)
 
-    boton_terminar_partida = Button(ventana, width=15, height=2,text="TERMINAR JUEGO", command= lambda : terminar_juego(ventana))
+    boton_terminar_partida = Button(ventana, width=15, height=2,text="TERMINAR JUEGO", state="disabled", command= lambda : terminar_juego(ventana))
     boton_terminar_partida.place(x=250,y=600)
 
-    boton_top10 = Button(ventana, width=15, height=2, text="TOP 10", command=1)
+    boton_top10 = Button(ventana, width=15, height=2, text="TOP 10",state="disabled",  command=1)
     boton_top10.place(x=400, y=500)
 
-    boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO", command=lambda : guardar_juego(lista_jugadas, ventana_menu, ventana))
+    boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO",state="disabled", command=lambda : guardar_juego(lista_jugadas, ventana_menu, ventana))
     boton_guardar_juego.place(x=400, y=550)
 
     boton_cargar_juego = Button(ventana, width=15, height=2, text="CARGAR JUEGO", command= lambda : cargar_juego(partida_guardada))
     boton_cargar_juego.place(x=400, y=600)
     #endregion
 
+    #region Entry nombre de jugador
+    nombre_jugador = StringVar(ventana)
+    entrada_nombre = Entry(ventana, textvariable=nombre_jugador)
+    entrada_nombre.place(x=300, y=660)
+    evaluar_nombre = Button(ventana, bg='SkyBlue1', text='OK', activebackground='SkyBlue1',bd=5, command=lambda: validar_nombre(boton_iniciar_juego, entrada_nombre))
+    evaluar_nombre.place(x=430,y=655)
+    #endregion
 
 
     ventana.mainloop()
@@ -645,6 +813,7 @@ def atras(ventana_destruir, ventanar_recuperar):
 
 def configuracion(ventana_menu):
     ventana_menu.withdraw()
+    global nivel, reloj, horas, minutos, segundos
 
     # region creacion y configuracion de la ventana
     ventana = Tk()
@@ -697,14 +866,47 @@ def configuracion(ventana_menu):
 
     #endregion
 
+    #region Entrada de tiempos
+    horas = StringVar(ventana)
+    label_horas = Label(ventana, text="Horas:", bg="gray29", fg="white", relief="solid").place(x=20, y=220)
+    entrada_horas = Entry(ventana, textvariable=horas)
+    entrada_horas.place(x=20, y=250)
+
+    minutos = StringVar(ventana)
+    label_minutos = Label(ventana, text="Horas:", bg="gray29", fg="white", relief="solid").place(x=20, y=280)
+    entrada_minutos = Entry(ventana, textvariable=minutos)
+    entrada_minutos.place(x=20, y=310)
+
+    segundos = StringVar(ventana)
+    label_segundos = Label(ventana, text="Horas:", bg="gray29", fg="white", relief="solid").place(x=20, y=340)
+    entrada_segundos = Entry(ventana, textvariable=segundos)
+    entrada_segundos.place(x=20, y=370)
+
+
+
+    #endregion
     agregar_configuraciones = Button(ventana, text="ACEPTAR", bg="gray29", relief="solid", fg="white", command=lambda: agrega_configuracion(ventana_menu, ventana, nivel.get()))
-    agregar_configuraciones.place(x=245, y=250)
+    agregar_configuraciones.place(x=245, y=400)
+
     ventana.mainloop()
 
 def agrega_configuracion(ventana_menu, ventana, nivel):
-    ventana_menu.state(newstate="normal")
-    messagebox.showinfo(title="CONFIGURACION", message="LA CONFIGURACION HA SIDO REGISTRADA")
-    ventana.destroy()
+    global horas,minutos,segundos
+    if horas.get() == "" and minutos.get() == "" and segundos.get() == "":
+        ventana_menu.state(newstate="normal")
+        messagebox.showinfo(title="CONFIGURACION", message="LA CONFIGURACION HA SIDO REGISTRADA")
+        ventana.destroy()
+        return
+
+    if int(horas.get()) <= 2 and int(horas.get()) >= 0 and int(minutos.get()) <= 59 and int(minutos.get()) >= 0 and int(segundos.get()) <= 59 and int(segundos.get()) >= 0:
+        ventana_menu.state(newstate="normal")
+        messagebox.showinfo(title="CONFIGURACION", message="LA CONFIGURACION HA SIDO REGISTRADA")
+        ventana.destroy()
+        return
+    messagebox.showinfo(title="CONFIGURACION",
+                        message="LOS DATOS INGRESADOS NO SON VALIDOS\nPOR FAVOR INGRSELOS NUEVAMENTE")
+
+
 
 def salir(ventana):
     seleccion = messagebox.askyesno(title="SALIR", message="¿DESEA SALIR DEL JUEGO?")
@@ -733,6 +935,15 @@ def terminar_juego(ventana):
         ventana.destroy()
         ventana_de_juego(ventana_menu)
 
+def validar_nombre(iniciar_juego, nombre):
+    if len(nombre.get()) >= 1 and len(nombre.get()) <= 30:
+        messagebox.showinfo(title="Nombre", message="EL NOMBRE ES VALIDO:\nPUEDE INICIAR EL JUEGO")
+        iniciar_juego.configure(state="normal")
+
+    else:
+        messagebox.showinfo(title="INCORRECTO", message="ERROR:\nEL NOMBRE DEBE ESTAR ENTRE 1 Y 30 CARACTERES\n POR FAVOR INGRESE DE NUEVO")
+
+
 pantalla_menu()
 
 
@@ -742,20 +953,29 @@ def PanelSeleccionPrueba(color_seleccionado, texto_seleccionado):
     global color, texto
     color = color_seleccionado
     texto = texto_seleccionado
+    print("PRUEBAS")
 
-def impresion(boton, lista):
-    if boton["text"] == "":
-        print("PUTA MADRE")
+def impresion(boton):
+    boton.configure(state="normal")
 
+def imprimir(entrada):
+    print("SI ESTA FUNCIONANDO")
+    print(entrada.get())
+    print(len(entrada.get()))
 
 def pruebas():
     ventana = Tk()
     lista_panel_seleccion = []
-    boton0 = Button(ventana, width=5, height=2, bg='snow', text='1', activebackground='snow', command=lambda: PanelSeleccionPrueba('snow', '1'))
+
+    entrada = StringVar()
+    nombre = Entry(ventana, textvariable=entrada)
+    nombre.pack()
+
+    boton0 = Button(ventana, width=5, height=2, bg='snow', text='1', activebackground='snow', state="disabled",command=lambda: imprimir(entrada))
     boton0.pack()
 
 
-    boton_juego = Button(ventana, width=4, height=2, command=lambda : print(validar_texto(boton_juego)))
+    boton_juego = Button(ventana, width=4, height=2, command=lambda : validar_nombre(boton0,entrada))
     boton_juego.pack()
 
     ventana.mainloop()
