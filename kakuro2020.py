@@ -37,6 +37,7 @@ segundos = ""
 def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borrar_juego, terminar_juego, top10, guardar_juego, validar_nombre, entrada):
     global reloj, juego_iniciado
 
+    #En esta seccion se habilitan los botones necesarios una vez que se inicie el juego
     juego_iniciado = True
     deshacer_jugada.configure(state="normal")
     rehacer_jugada.configure(state="normal")
@@ -48,6 +49,7 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
     validar_nombre.configure(state="disabled")
     entrada.configure(state="disabled")
 
+    #Se crea la funcion del cronometro en caso de que el usuario lo escoja
     def crono():
         def iniciar(h=0,m=0,s=0):
             global proceso
@@ -72,16 +74,14 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
 
             proceso = time.after(1000, iniciar, h, m , (s + 1))
-            print(horas.get())
-            print(minutos.get())
-            print(segundos.get())
 
+            #Validacion para ver si el usuario ingreso algun tiempo, si no lo hizo se usan los tiempos predeterminados
             if str(horas.get()) == "" and str(minutos.get()) == "" and str(segundos.get()) == "":
 
                 if nivel.get() == 1:
 
                     tiempo = str(1) + ":" + str(0) + ":" + str(0)
-                    print(tiempo)
+
                     if time["text"] == tiempo:
                         parar()
                         messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
@@ -89,7 +89,7 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
                 if nivel.get() == 2:
 
                     tiempo = str(0) + ":" + str(45) + ":" + str(0)
-                    print(tiempo)
+
                     if time["text"] == tiempo:
                         parar()
                         messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
@@ -97,13 +97,15 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
                 if nivel.get() == 3:
 
                     tiempo = str(0) + ":" + str(30) + ":" + str(0)
-                    print(tiempo)
+
                     if time["text"] == tiempo:
                         parar()
                         messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
+
+            #Si el usuario ingreso un tiempo se le ingresa al cronometro como limite de tiempo
             else:
                 tiempo = str(horas.get()) + ":" + str(minutos.get()) + ":" + str(segundos.get())
-                print(tiempo)
+
                 if time["text"] == tiempo:
                     parar()
                     messagebox.showinfo(message="LO SENTIMOS, SE ACABO EL TIEMPO")
@@ -118,7 +120,9 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
         iniciar()
 
+    #Creacion del timer si el usuario lo desea
     def timer():
+        #Validacion para ver si el usuario ingreso un tiempo, si no lo hizo se usan los tiempos predeterminados
         if str(horas.get()) == "" and str(minutos.get()) == "" and str(segundos.get()) == "":
             if nivel.get() == 1:
                 h=1
@@ -136,6 +140,8 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
                 h = 0
                 m = 30
                 s = 0
+
+        #Si lo hizo se le dan al timer para que use el tiempo ingresado
         else:
             h = int(horas.get())
             m = int(minutos.get())
@@ -183,7 +189,7 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
         iniciar(h,m,s)
 
-
+    #Validacion para mostrar lo que el usuario eligio
     if reloj.get() == 1:
         crono()
 
@@ -253,6 +259,9 @@ def validar_texto(boton):
 
 def deshacer_jugada(lista_jugadas, lista_eliminados):
     global texto
+    if lista_jugadas == []:
+        messagebox.showinfo(title="DESHACER JUGADA", message="NO HAY JUGADAS PARA DESHACER")
+        return
     lista_jugadas[-1][0].configure(text=lista_jugadas[-1][1])
     lista_eliminados.append(lista_jugadas[-1])
     lista_jugadas.pop()
@@ -263,8 +272,11 @@ def ayuda_manual():
     wb.open_new(r"C:\Users\Jhonny Diaz\PycharmProjects\Programa 3 Kakuro\manual_de_usuario_kakuro2020.pdf")
 
 def rehacer_jugada(lista_jugadas, lista_eliminados):
-    lista_eliminados[-1][0].configure(text=lista_eliminados[-1][2])
+    if lista_eliminados == []:
+        messagebox.showinfo(title="REHACER JUGADA", message="NO HAY JUGADAS PARA REHACER")
+        return
 
+    lista_eliminados[-1][0].configure(text=lista_eliminados[-1][2])
     lista_jugadas.append(lista_eliminados[-1])
     lista_eliminados.pop()
 
