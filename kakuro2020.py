@@ -41,8 +41,40 @@ top10 = [["Jonko", "0:30:50"], ["Daniel", "0:34:40"], ["Bryan", "0:39:02"], ["Ga
 
 
 
+def acomoda_top(valores):
+    global top10
+    indice = -1
+    if valores[1][0].isdigit() == True:
+        horas = int(valores[1][0])
 
+    if valores[1][2].isdigit() == True and valores[1][3].isdigit() == True:
+        minutos = int(valores[1][2:4])
+    else:
+        minutos = int(valores[1][2])
 
+    segundos = int(valores[1][5:])
+
+    tiempo_en_segundos_nuevo = horas * 3600 + minutos * 60 + segundos
+
+    for i in top10:
+        indice += 1
+
+        if i[1][0].isdigit() == True:
+            horastop = int(i[1][0])
+
+        if i[1][2].isdigit() == True and i[1][3].isdigit() == True:
+            minutostop = int(i[1][2:4])
+        else:
+            minutostop = int(i[1][2])
+
+        segundostop = int(i[1][5:])
+
+        tiempo_en_segundos_top = (horastop * 3600) + (minutostop * 60) + segundostop
+
+        if tiempo_en_segundos_top > tiempo_en_segundos_nuevo:
+            top10.insert(indice, valores)
+            top10.pop()
+            return
 
 def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borrar_juego, terminar_juego, top10, guardar_juego, validar_nombre, entrada, botones_de_juego):
     global reloj, juego_iniciado
@@ -64,15 +96,15 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
     #Se crea la funcion del cronometro en caso de que el usuario lo escoja
     def crono():
-        def iniciar(h=0,m=0,s=0):
+        def iniciar(h=00,m=00,s=00):
             global proceso
 
             #Validacion para el tiempo
             if s > 59:
-                s = 0
+                s = 00
                 m += 1
                 if m > 59:
-                    m = 0
+                    m = 00
                     h += 1
                     if h == 1:
                         messagebox.showinfo(message="SE HA ACABADO SU TIEMPO")
@@ -243,7 +275,8 @@ def cambio_boton(Boton, jugada):
         boton_actual.insert(0,Boton)
     print(lista_jugadas)
 
-def Top10(top10):
+def Top10():
+    global top10
 
     #region Creacion y configuracion de ventana
     ventana = Tk()
@@ -799,7 +832,7 @@ def ventana_de_juego(ventana_menu):
     boton_terminar_partida = Button(ventana, width=15, height=2,text="TERMINAR JUEGO", state="disabled", command= lambda : terminar_juego(ventana))
     boton_terminar_partida.place(x=250,y=600)
 
-    boton_top10 = Button(ventana, width=15, height=2, text="TOP 10",state="disabled",  command= lambda : Top10(top10))
+    boton_top10 = Button(ventana, width=15, height=2, text="TOP 10",state="disabled",  command= lambda : Top10())
     boton_top10.place(x=400, y=500)
 
     boton_guardar_juego = Button(ventana, width=15, height=2, text="GUARDAR JUEGO",state="disabled", command=lambda : guardar_juego(ventana_menu, ventana))
@@ -1079,5 +1112,75 @@ def pruebas():
 
     ventana.mainloop()
 
+def Top10ejemplo(valores):
+    global top10
 
-pruebas()
+    acomoda_top(valores)
+
+    #region Creacion y configuracion de ventana
+    ventana = Tk()
+    # titulo
+    ventana.title("KAKURO")
+
+    # se le da tamaño a la ventana principal
+    ventana.geometry("800x800")
+    # color a la ventana principal
+    ventana.configure(bg="gray70")
+
+    etiqueta = Label(ventana, text="TOP 10", bg="gray29", fg="white", padx=100, pady=5, font="Helvetica 25",
+                     relief="solid").place(x=250, y=5)
+    #endregion
+
+    #region Labels para cada tiempo
+    lblnombre = Label(ventana, text="NOMBRE",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=60, y=90)
+    lbltiempo = Label(ventana, text="TIEMPO",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=600, y=90)
+
+    lbltop1 = Label(ventana, text="1",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=150)
+    lbltop2 = Label(ventana, text="2",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=200)
+    lbltop3 = Label(ventana, text="3",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=250)
+    lbltop4 = Label(ventana, text="4",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=300)
+    lbltop5 = Label(ventana, text="5",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=350)
+    lbltop6 = Label(ventana, text="6",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=400)
+    lbltop7 = Label(ventana, text="7",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=450)
+    lbltop8 = Label(ventana, text="8",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=500)
+    lbltop9 = Label(ventana, text="9",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=550)
+    lbltop10 = Label(ventana, text="10",bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=10, y=600)
+
+    #endregion
+
+    #region Labels que contienen los valores
+    lblnombre1 = Label(ventana, text=top10[0][0], bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=60, y=150)
+    lbltiempo1 = Label(ventana, text=top10[0][1], bg="gray29", fg="white",font="Helvetica 25", relief="solid").place(x=600, y=150)
+
+    lblnombre2 = Label(ventana, text=top10[1][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=200)
+    lbltiempo2 = Label(ventana, text=top10[1][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=200)
+
+    lblnombre3 = Label(ventana, text=top10[2][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=250)
+    lbltiempo3 = Label(ventana, text=top10[2][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=250)
+
+    lblnombre4 = Label(ventana, text=top10[3][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=300)
+    lbltiempo4 = Label(ventana, text=top10[3][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=300)
+
+    lblnombre5 = Label(ventana, text=top10[4][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=350)
+    lbltiempo5 = Label(ventana, text=top10[4][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=350)
+
+    lblnombre6 = Label(ventana, text=top10[5][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=400)
+    lbltiempo6 = Label(ventana, text=top10[5][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=400)
+
+    lblnombre7 = Label(ventana, text=top10[6][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=450)
+    lbltiempo7 = Label(ventana, text=top10[6][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=450)
+
+    lblnombre8 = Label(ventana, text=top10[7][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=500)
+    lbltiempo8 = Label(ventana, text=top10[7][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=500)
+
+    lblnombre9 = Label(ventana, text=top10[8][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=550)
+    lbltiempo9 = Label(ventana, text=top10[8][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=550)
+
+    lblnombre10 = Label(ventana, text=top10[9][0], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=60, y=600)
+    lbltiempo10 = Label(ventana, text=top10[9][1], bg="gray29", fg="white", font="Helvetica 25", relief="solid").place(x=600, y=600)
+    #endregion
+
+    ventana.mainloop()
+
+#Top10ejemplo(["Jhonny", "0:1:41"])
+#pruebas()
