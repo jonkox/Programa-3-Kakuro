@@ -1,7 +1,9 @@
 """Programa 3
 Kakuro 2021
 Jhonny Andres Diaz Coto
-Carnet: 2020042119"""
+Carnet: 2020042119
+Link para el repositorio del proyecto: https://github.com/jonkox/Programa-3-Kakuro.git"""
+
 #IMPORTACIONES----------------------------------------------------------------------------------------------------------
 from tkinter import *
 from tkinter import messagebox
