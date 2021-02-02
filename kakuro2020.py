@@ -34,13 +34,15 @@ minutos = ""
 segundos = ""
 lista_columnas = []
 lista_filas = []
+jugadas_de_partida = []
+juego_terminado = False
+tiempo_jugado = ""
 top10 = [["Jonko", "0:30:50"], ["Daniel", "0:34:40"], ["Bryan", "0:39:02"], ["Gabriel", "0:42:37"], ["Maria", "0:45:15"],
          ["Dolly", "0:55:21"], ["Erick", "0:59:17"], ["Ana", "1:2:27"], ["Kenneth", "1:12:45"], ["Jessica", "1:20:36"]]
 
 
 
-
-
+"""Funcion acomoda top: esta funcion recibe una lista que contiene el nombre del jugador y el tiempo del juego y ordena de buena manera el top 10 como se debe presentar"""
 def acomoda_top(valores):
     global top10
     indice = -1
@@ -49,10 +51,10 @@ def acomoda_top(valores):
 
     if valores[1][2].isdigit() == True and valores[1][3].isdigit() == True:
         minutos = int(valores[1][2:4])
+        segundos = int(valores[1][5:])
     else:
         minutos = int(valores[1][2])
-
-    segundos = int(valores[1][5:])
+        segundos = int(valores[1][4:])
 
     tiempo_en_segundos_nuevo = horas * 3600 + minutos * 60 + segundos
 
@@ -76,8 +78,10 @@ def acomoda_top(valores):
             top10.pop()
             return
 
+"""Funcion iniciar juego: esta funcion es una de las mas importantes puesto que es la funcion que habilita y deshabilita distintas funciones, esta funcion habilita los botones de juego
+y en caso de ser escogido es la funcion que muestra el timer o el cronometro segun se haya escogido"""
 def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borrar_juego, terminar_juego, top10, guardar_juego, validar_nombre, entrada, botones_de_juego):
-    global reloj, juego_iniciado
+    global reloj, juego_iniciado, tiempo_jugado, juego_terminado
 
     #En esta seccion se habilitan los botones necesarios una vez que se inicie el juego
     juego_iniciado = True
@@ -116,6 +120,8 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
             #Se muestra el tiempo
             time['text'] = str(h) + ":" + str(m) + ":" + str (s)
+            tiempo_jugado = time["text"]
+
 
 
             proceso = time.after(1000, iniciar, h, m , (s + 1))
@@ -164,6 +170,9 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
         time.place(x=20, y=750)
 
         iniciar()
+        if juego_terminado == True:
+            parar()
+
 
     #Creacion del timer si el usuario lo desea
     def timer():
@@ -218,6 +227,7 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
             #Se muestra el tiempo
             time['text'] = str(h) + ":" + str(m) + ":" + str (s)
+            tiempo_jugado = time["text"]
 
 
             proceso = time.after(1000, iniciar, h, m , (s - 1))
@@ -233,6 +243,8 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
         time.place(x=20, y=750)
 
         iniciar(h,m,s)
+        if juego_terminado == True:
+            parar()
 
     #Validacion para mostrar lo que el usuario eligio
     if reloj.get() == 1:
@@ -240,10 +252,29 @@ def iniciar_juego(ventana, deshacer_jugada, rehacer_jugada, borrar_casilla, borr
 
     if reloj.get() == 3:
         timer()
+    if juego_terminado == True:
+        lista_jugadas = []
+        lista_eliminados = []
+        ventana_menu.state(newstate="normal")
+        ventana.destroy()
+        juego_terminado = False
 
 """Funcion cambio boton: esta funcion tiene como tarea hacer que el boton seleccionado para asiganarle un valor para hacer una jugada se cambie, si se le asigna un valor vacio se retorna un error."""
 def cambio_boton(Boton, jugada):
-    global texto, lista_jugadas, boton_actual, borrar
+    global texto, lista_jugadas, boton_actual, borrar, jugadas_de_partida
+
+    # Con esta condicional se valida si lo que se quiere hacer es borrar una casilla o no
+    if borrar == True:
+        if validar_texto(Boton) == False:
+            messagebox.showerror(title="ERROR", message="LA CASILLA NO SE PUEDE ELIMINAR")
+            borrar = False
+
+        else:
+            Boton.configure(text="")
+            borrar = False
+        return
+
+
 
     indice_columnas = encuentra_indice(lista_columnas, Boton)
     indice_filas = encuentra_indice(lista_filas, Boton)
@@ -265,18 +296,7 @@ def cambio_boton(Boton, jugada):
         lista_jugadas.append(jugada)
 
 
-    #Con esta condicional se valida si lo que se quiere hacer es borrar una casilla o no
-    if borrar == True:
-        print(Boton["text"])
-        if validar_texto(Boton) == False:
-            messagebox.showerror(title="ERROR", message="LA CASILLA NO SE PUEDE ELIMINAR")
-            borrar = False
 
-        else:
-            Boton.configure(text="")
-            borrar = False
-            print(borrar)
-        return
 
     #Valida que se haya seleccionado un boton del panel antes de configurar el boton
     if texto == '':
@@ -287,7 +307,11 @@ def cambio_boton(Boton, jugada):
         Boton.configure(text=texto)
         boton_actual.insert(0,Boton)
 
+    #validar_sumas(jugadas_de_partida)
 
+    validacion_resultados()
+
+"""Funcion Top10: esta funcion es la que se encarga de mostrar una ventana con los valores del top 10"""
 def Top10():
     global top10
 
@@ -377,11 +401,14 @@ def PanelSeleccion(color_seleccionado, texto_seleccionado, boton_seguro, lista_b
 
     cambio_boton(boton_seguro)
 
+"""Funcion validar texto: esta funcion valida el un boton contiene texto o no y retorna un valor booleano para entender"""
 def validar_texto(boton):
     if boton["text"] == "":
         return False
     return True
 
+"""Funcion deshacer jugada: esta funcion recibe una lista de jugadas y una de eliminados, lo que hace esta funcion es deshacer la ultima jugada, y esa jugada deshecha la 
+ingresa a la lista de eliminados."""
 def deshacer_jugada(lista_jugadas, lista_eliminados):
     global texto
     if lista_jugadas == []:
@@ -396,6 +423,7 @@ def ayuda_manual():
 
     wb.open_new(r"C:\Users\Jhonny Diaz\PycharmProjects\Programa 3 Kakuro\manual_de_usuario_kakuro2020.pdf")
 
+"""Funcion rehacer jugada: esta funcion recibe una lista de jugadas y una de eliminados, esta funcion rehace la jugada, eliminandola de la lista de eliminados e ingresandola en la lista de jugadas"""
 def rehacer_jugada(lista_jugadas, lista_eliminados):
     if lista_eliminados == []:
         messagebox.showinfo(title="REHACER JUGADA", message="NO HAY JUGADAS PARA REHACER")
@@ -405,10 +433,12 @@ def rehacer_jugada(lista_jugadas, lista_eliminados):
     lista_jugadas.append(lista_eliminados[-1])
     lista_eliminados.pop()
 
+"""Funcion ventana de juego: esta funcion es la funcion mas importante del programa puesto que es la funcion que crea el tablero y demas cosas importantes que se deben mostrar
+para poder jugar al juego"""
 def ventana_de_juego(ventana_menu):
     ventana_menu.withdraw()
 
-    global texto, nombre_jugador, lista_filas, lista_columnas
+    global texto, nombre_jugador, lista_filas, lista_columnas, jugadas_de_partida
 
 
 
@@ -473,9 +503,11 @@ def ventana_de_juego(ventana_menu):
     #endregion
 
     #region botones de juego
-    global lista_botones_de_juego, lista_botones_juego_facil_1
+    global lista_botones_de_juego, lista_botones_juego_facil_1, jugad1
     lista_botones_de_juego = []
     lista_botones_juego_facil_1 = []
+    jugada = []
+
 
     #region FILAS
     fila1_jugada1 = []
@@ -553,6 +585,7 @@ def ventana_de_juego(ventana_menu):
 
     boton_juego2x2 = Button(ventana, width=4, height=2,bg="black",state="disabled", text="    14\n     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x2, texto))
     boton_juego2x2.place(x=140, y=142)
+    jugada.append(boton_juego2x2)
 
 
     boton_juego2x3 = Button(ventana, width=4, height=2,bg="black",state="disabled", text="    36\n7     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x3, texto))
@@ -577,7 +610,7 @@ def ventana_de_juego(ventana_menu):
     columna2_jugada1.append(boton_juego2x6)
     fila5_jugada1.append(boton_juego2x6)
 
-    boton_juego2x7 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   \n7     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x7, texto))
+    boton_juego2x7 = Button(ventana, width=4, height=2, bg="black",state="disabled",text="   \n11     ",fg="white",justify="right", command=lambda: cambio_boton(boton_juego2x7, texto))
     boton_juego2x7.place(x=140, y=352)
 
 
@@ -610,6 +643,7 @@ def ventana_de_juego(ventana_menu):
     lista_botones_de_juego.append(boton_juego3x2)
     columna3_jugada1.append(boton_juego3x2)
     fila1_jugada1.append(boton_juego3x2)
+    jugada.append(boton_juego3x2)
 
     boton_juego3x3 = Button(ventana, width=4, height=2, state="disabled", command=lambda: cambio_boton(boton_juego3x3, texto))
     boton_juego3x3.place(x=180, y=184)
@@ -669,6 +703,7 @@ def ventana_de_juego(ventana_menu):
     lista_botones_de_juego.append(boton_juego4x2)
     columna4_jugada1.append(boton_juego4x2)
     fila1_jugada1.append(boton_juego4x2)
+    jugada.append(boton_juego4x2)
 
     boton_juego4x3 = Button(ventana, width=4, height=2, state="disabled", command=lambda: cambio_boton(boton_juego4x3, texto))
     boton_juego4x3.place(x=220, y=184)
@@ -862,7 +897,7 @@ def ventana_de_juego(ventana_menu):
     boton_juego7x9 = Button(ventana, width=4, height=2, state="disabled", command=lambda: cambio_boton(boton_juego7x9, texto))
     boton_juego7x9.place(x=340, y=436)
     lista_botones_de_juego.append(boton_juego7x9)
-    columna7_jugada2.append(boton_juego7x3)
+    columna7_jugada2.append(boton_juego7x9)
     fila8_jugada2.append(boton_juego7x9)
 
     lista_columnas.append(columna7_jugada2)
@@ -1007,6 +1042,55 @@ def ventana_de_juego(ventana_menu):
 
 
     #endregion
+
+    #region JUGADAS DE PARTIDA
+
+    #region Jugadas por fila
+    jugadas_de_partida.append(["14", fila1_jugada1])
+    jugadas_de_partida.append(["4",  fila1_jugada2])
+    jugadas_de_partida.append(["36", fila2_jugada1])
+    jugadas_de_partida.append(["12", fila3_jugada1])
+    jugadas_de_partida.append(["10", fila3_jugada2])
+    jugadas_de_partida.append(["3",  fila4_jugada1])
+    jugadas_de_partida.append(["20", fila4_jugada2])
+    jugadas_de_partida.append(["17", fila5_jugada1])
+    jugadas_de_partida.append(["6",  fila5_jugada2])
+    jugadas_de_partida.append(["13", fila6_jugada1])
+    jugadas_de_partida.append(["10", fila6_jugada2])
+    jugadas_de_partida.append(["28", fila7_jugada1])
+    jugadas_de_partida.append(["6",  fila8_jugada1])
+    jugadas_de_partida.append(["8",  fila8_jugada2])
+    #endregion
+
+    #region jugadas por columna
+    jugadas_de_partida.append(["7", columna2_jugada1])
+    jugadas_de_partida.append(["11", columna2_jugada2])
+
+    jugadas_de_partida.append(["19", columna2_jugada1])
+    jugadas_de_partida.append(["7", columna2_jugada2])
+
+    jugadas_de_partida.append(["12", columna2_jugada1])
+    jugadas_de_partida.append(["20", columna2_jugada2])
+
+    jugadas_de_partida.append(["4", columna2_jugada1])
+    jugadas_de_partida.append(["11", columna2_jugada2])
+
+    jugadas_de_partida.append(["11", columna2_jugada1])
+    jugadas_de_partida.append(["8", columna2_jugada2])
+
+    jugadas_de_partida.append(["17", columna2_jugada1])
+    jugadas_de_partida.append(["4", columna2_jugada2])
+
+    jugadas_de_partida.append(["7", columna2_jugada1])
+    jugadas_de_partida.append(["25", columna2_jugada2])
+
+    jugadas_de_partida.append(["10", columna2_jugada1])
+    jugadas_de_partida.append(["14", columna2_jugada2])
+
+    #endregion
+
+    #endregion
+
     #endregion
 
     #region Botones principales
@@ -1049,6 +1133,8 @@ def ventana_de_juego(ventana_menu):
 
     ventana.mainloop()
 
+"Funcion validar columnas: esta funcion recibe el texto o el valor que se quiere poner al boton y un indice que indica en donde se encuentra el boton, con una variable global de los botones" \
+"la funcion busca en ese grupo de botones si el valor que se quiere ingresar ya esta, si lo esta indice el error, si no esta posigue con el cambio del boton"
 def validar_columnas(texto, indice):
     global lista_columnas
     for i in lista_columnas[indice]:
@@ -1057,6 +1143,8 @@ def validar_columnas(texto, indice):
 
     return False
 
+"""Funcion validar filas: esta funcion recibe el valor que se le quiere poner al boton y un indice que indica en que posicion se encuentra dentrto de una variable global q ue contiene
+todas las listas de las jugadas por filas y valida si el valor ya se encuentra dentro de la fila o no."""
 def validar_filas(texto, indice):
     global lista_filas
     for i in lista_filas[indice]:
@@ -1065,6 +1153,7 @@ def validar_filas(texto, indice):
 
     return False
 
+"""Funcion pantalla menu: esta funcion es la pantalla principal que muestra el menu y sus funciones, muestra funciones como inciar juego o el manual de usuario"""
 def pantalla_menu():
     # region creacion y configuracion de la ventana
     global ventana_menu
@@ -1102,6 +1191,7 @@ def pantalla_menu():
 
     ventana_menu.mainloop()
 
+"""Funcion acerca de: esat funcion muestra un pequeña venta donce se muestra la informacion mas basica del programa como la fecha de cracion o el autor"""
 def acerca_de(ventana_menu):
     ventana_menu.withdraw()
 
@@ -1129,6 +1219,7 @@ def acerca_de(ventana_menu):
 
     acerca.mainloop()
 
+"""Funcion guardar juego: esta funcion guarda el juego actual dentro de una variable que se guarda dentro de un archivo .dat"""
 def guardar_juego(venatana_menu, ventana_juego):
     global partida_guardada, lista_eliminados, lista_jugadas
     partida_guardada = lista_jugadas[:]
@@ -1139,23 +1230,30 @@ def guardar_juego(venatana_menu, ventana_juego):
         venatana_menu.state(newstate="normal")
         ventana_juego.destroy()
 
+"""Funcion cargar juego: esta funcion lo que hace es cargar el juego que este guardado dentro de la variable del juego que se guardo anteriormente"""
 def cargar_juego(botones_juego):
-    global partida_guardada
+    global partida_guardada, lista_jugadas
+
+    lista_jugadas = partida_guardada[:]
+
     for i in botones_juego:
         i.configure(state="normal")
-    print(partida_guardada)
+
     for i in partida_guardada:
         for j in i:
             try:
                 j.configure(text=i[2])
 
             except AttributeError:
-                print("NOPE")
+                print("")
 
+"""Funcion atras: esta funcion basica lo que hace es que recibe dos ventanas y muestra una mintras la otra fue destruida"""
 def atras(ventana_destruir, ventanar_recuperar):
     ventanar_recuperar.state(newstate="normal")
     ventana_destruir.destroy()
 
+"""Funcion configuracion: esat funcion muestra un pantalla donde se muestran las ocnfiguraciones que se pueden hacer para que el juego ffuncione de la mejor manera, muestra
+opciones como el nivel de dificultad, si se quiere el cronometro o un timer y el tiempo que se desea para jugar"""
 def configuracion(ventana_menu):
     ventana_menu.withdraw()
     global nivel, reloj, horas, minutos, segundos
@@ -1235,8 +1333,13 @@ def configuracion(ventana_menu):
 
     ventana.mainloop()
 
+"""Funcion agrega configuracion: esta funcion lo que hace es que guarda los cambios efectuados por el usuario dentro de la pantalla de configuracion"""
 def agrega_configuracion(ventana_menu, ventana, nivel):
     global horas,minutos,segundos
+    if nivel == 2 or nivel == 3:
+        messagebox.showerror(title="ERROR", message="LO SENTIMOS MUCHO, PERO NO TENEMOS PARTIDAS PARA ESE NIVEL.")
+        return
+
     if horas.get() == "" and minutos.get() == "" and segundos.get() == "":
         ventana_menu.state(newstate="normal")
         messagebox.showinfo(title="CONFIGURACION", message="LA CONFIGURACION HA SIDO REGISTRADA")
@@ -1251,11 +1354,13 @@ def agrega_configuracion(ventana_menu, ventana, nivel):
     messagebox.showinfo(title="CONFIGURACION",
                         message="LOS DATOS INGRESADOS NO SON VALIDOS\nPOR FAVOR INGRSELOS NUEVAMENTE")
 
+"""Funcion salir: esta funcion destruye la ventana para cuando el usuario quiera terminar el juego"""
 def salir(ventana):
     seleccion = messagebox.askyesno(title="SALIR", message="¿DESEA SALIR DEL JUEGO?")
     if seleccion == True:
         ventana.destroy()
 
+"""Funcion borrar juego: esta funcion pregunta al usuario si quiere borrar su juego actual, si el usuario accede muestra todas las casillas de juego en blanco nuevamente para dar un nuevo inicio al juego"""
 def borrar_juego(lista_botones):
     global lista_jugadas, lista_eliminados
     seleccion = messagebox.askyesno(title="BORRAR PARTIDA", message="¿DESEA BORRAR LA PARTIDA?")
@@ -1265,12 +1370,13 @@ def borrar_juego(lista_botones):
         for i in lista_botones:
             i.configure(text="")
 
+"""Funcion borrar casilla: esat funcion elimina el valor que tenga una casilla, solo se puede hacer si la casilla ya tiene un valor determinado, si no lo posee indica al usuario del error"""
 def borrar_casilla():
     global borrar
     borrar = True
     messagebox.showinfo(title="CONFIGURACION", message="SELECCIONE LA CASILLA QUE DESEA ELIMINAR")
-    print(borrar)
 
+"""Funcion terminar juego: esta funcion c=termina el juego actual del usuario, mostrandole nuevamente el tabledo en caso de que desee iniciar nuevamente"""
 def terminar_juego(ventana):
     global ventana_menu, lista_jugadas
     seleccion = messagebox.askyesno(title="TERMINAR PARTIDA", message="¿DESEA TERMINAR EL JUEGO?")
@@ -1279,6 +1385,7 @@ def terminar_juego(ventana):
         ventana.destroy()
         ventana_de_juego(ventana_menu)
 
+"""Funcion validar nombre: esta funcion revibe el boton de iniciar juego y el nombre que ingreso el usuario, esta funcion valida el largo de este nombre para poder continuar con el juego"""
 def validar_nombre(iniciar_juego, nombre):
     if len(nombre.get()) >= 1 and len(nombre.get()) <= 30:
         messagebox.showinfo(title="Nombre", message="EL NOMBRE ES VALIDO:\nPUEDE INICIAR EL JUEGO")
@@ -1287,6 +1394,7 @@ def validar_nombre(iniciar_juego, nombre):
     else:
         messagebox.showinfo(title="INCORRECTO", message="ERROR:\nEL NOMBRE DEBE ESTAR ENTRE 1 Y 30 CARACTERES\n POR FAVOR INGRESE DE NUEVO")
 
+"""Funcion encuentra indice: esta funcion recibe una lista y el elemento que se desea buscar, de esta manera la funcion busca el elemento dentro de ;a l;ista y retorna el indice del lugar donde se encuentra el elemento"""
 def encuentra_indice(lista, elemento):
     indice = 0
 
@@ -1296,43 +1404,162 @@ def encuentra_indice(lista, elemento):
         else:
             indice += 1
 
+"""Funcion validar sumas: esta funcion valida que los valores que se deben cumplir sean los resultados de las jugadas, esat funcion 
+recibe la lista con las jugadas del tablero y revisa que cada jugada sea el valor correcto, el momento en que se haya completado se le indica al usaurio con un mensaje"""
+def validar_sumas(jugadas):
+    contador = 0
+    for i in jugadas:
+        if validar_textos(i) == False:
+            if validar_sumas(i) == True:
+                contador += 1
+
+            else:
+                messagebox.showerror(title="ERROR", message="LA SUMA DE SUS RESPUESTAS NO ES IGUAL A LA CLAVE")
+
+"""Funcion resta de tiempos: esta funcion resta los tiempos del total de tiempo jugado y el tiempo restante para asi saber cuanto fue el tiempo que duro el usuario jugando"""
+def resta_de_tiempos():
+    global horas, minutos, segundos, tiempo_jugado
+    # Validacion para ver si el usuario ingreso un tiempo, si no lo hizo se usan los tiempos predeterminados
+    if str(horas.get()) == "" and str(minutos.get()) == "" and str(segundos.get()) == "":
+        if nivel.get() == 1:
+            tiempo = "1:0:0"
+
+        if nivel.get() == 2:
+            tiempo = "0:45:0"
+
+        if nivel.get() == 3:
+            tiempo = "0:30:0"
+
+        tiempo_inicial_en_segundos = convertir_a_segundos(tiempo)
+        tiempo_final_en_segundos = convertir_a_segundos(tiempo_jugado)
+
+        tiempo_final = tiempo_inicial_en_segundos - tiempo_final_en_segundos
+
+        tiempo_jugado = convertir_segundos_a_horas(tiempo_final)
+
+        return str(tiempo_jugado)
+
+
+
+    # Si lo hizo se le dan al timer para que use el tiempo ingresado
+    else:
+        h = int(horas.get())
+        m = int(minutos.get())
+        s = int(segundos.get())
+
+        tiempo_inicial_segundos = (h * 3600) + (m * 60) + s
+        tiempo_final_segundos = convertir_a_segundos(tiempo_jugado)
+
+        tiempo_final = tiempo_inicial_segundos - tiempo_final_segundos
+
+        tiempo_jugado = convertir_segundos_a_horas(tiempo_final)
+
+        return tiempo_jugado
+
+"""Funcion validar textos: esta funcion recibe una jugada y retorna un valor booleano para saber si tiene todos sus valores en blanco o no"""
+def validar_textos(jugada):
+    JUGADA = jugada[1:]
+    largo = len(jugada)
+    contador = 0
+
+
+
+    for i in JUGADA:
+
+        for j in i:
+            if obtiene_texto(j) == "":
+                contador += 1
+
+
+
+    if contador == largo:
+        return True
+    else:
+        return False
+
+"""Funcion obtiene texto: esat funcion obtiene el valor de un boton"""
+def obtiene_texto(boton):
+    return boton["text"]
+
+"""Funcion validacion de resultados: esta funcion recibe una lista con las jugadas de la partida y evaluda las jugadas con el valor del resultado que deben de dar las sumas y se maneja con un contado
+este contador es el que define si las partida ha terminado o no"""
+def validacion_resultados():
+    global jugadas_de_partida, juego_terminado, nombre_jugador, horas, minutos, segundos, reloj, tiempo_jugado, top10, lista_jugadas, lista_eliminados
+    contador = 0
+
+
+    for i in jugadas_de_partida:
+        resultado = int(i[0])
+        suma = 0
+
+        for j in i[1]:
+            if j["text"] == "":
+                pass
+            else:
+                suma = suma + int(j["text"])
+
+        if suma == resultado:
+            contador += 1
+
+    print(contador)
+    if contador == 18:
+        if reloj.get() == 1:
+            #valores = [str(nombre_jugador), str(tiempo_jugado)]
+            #acomoda_top(valores)
+            messagebox.showinfo(message="FELICIDADES\n HA GANADO EL KAKURO")
+            juego_terminado = True
+            pantalla_menu()
+
+
+
+        if reloj.get() == 2:
+            messagebox.showinfo(message="FELICIDADES\n HA GANADO EL KAKURO")
+            juego_terminado = True
+            pantalla_menu()
+
+
+
+
+        if reloj.get() == 3:
+            #tiempo_jugado = resta_de_tiempos()
+            #acomoda_top([str(nombre_jugador), str(tiempo_jugado)])
+            messagebox.showinfo(message="FELICIDADES\n HA GANADO EL KAKURO")
+            juego_terminado = True
+            pantalla_menu()
+
+"""Funcion convertir a segundos: esta funcion recibe un tiempo que es un string con el formato hhmmss y retorna el valor del tiempo convertido en segundos"""
+def convertir_a_segundos(tiempo):
+    if tiempo[0].isdigit() == True:
+        horas = int(tiempo[0])
+
+    if tiempo[2].isdigit() == True and tiempo[3].isdigit() == True:
+        minutos = int(tiempo[2:4])
+        segundos = int(tiempo[5:])
+    else:
+        minutos = int(tiempo[2])
+        segundos = int(tiempo[4:])
+
+
+    tiempo_en_segundos_nuevo = (horas * 3600) + (minutos * 60) + segundos
+
+    return tiempo_en_segundos_nuevo
+
+"""Funcion convertir los segundos a horas en un formato hhmmss"""
+def convertir_segundos_a_horas(segundos):
+    horas = (segundos // 60) // 60
+    minutos = (segundos // 60) - (horas * 60)
+    segundos = (segundos % 60)
+
+    return str(horas) + ":" + str(minutos) + ":" + str(segundos)
+
 
 pantalla_menu()
 
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ESPACIO PARA FUNCIONES DE PRUEBA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-lista = []
-def PanelSeleccionPrueba(color_seleccionado, texto_seleccionado):
-    global color, texto
-    color = color_seleccionado
-    texto = texto_seleccionado
-    print("PRUEBAS")
-
-def impresion(boton):
-    boton.configure(state="normal")
-
-def imprimir(entrada):
-    print("SI ESTA FUNCIONANDO")
-    print(entrada.get())
-    print(len(entrada.get()))
-
-def pruebas():
-    ventana = Tk()
-    lista_panel_seleccion = []
-
-    entrada = StringVar()
-    nombre = Entry(ventana, textvariable=entrada)
-    nombre.pack()
-
-    boton0 = Button(ventana, width=5, height=2, bg='snow', text='1', activebackground='snow', state="disabled",command=lambda: imprimir(entrada))
-    boton0.pack()
-
-
-    boton_juego = Button(ventana, width=4, height=2, command=lambda : Top10(top10))
-    boton_juego.pack()
-
-    ventana.mainloop()
-
+"""Este espacio fue utilizado para hacer funciones de prueba y probar distintos metodos
+La funcion que se encuentra a continuacion es un ejemplio del funcionamiento de la funcion que esncontrarmos anteriormente del top 10
+La funcion muestra una ventana con el top 10, para probarla debemos descomentar las instrucciones de abajo."""
 def Top10ejemplo(valores):
     global top10
 
@@ -1403,7 +1630,5 @@ def Top10ejemplo(valores):
 
     ventana.mainloop()
 
-
-
-#Top10ejemplo(["Jhonny", "0:1:41"])
+#Top10ejemplo(["Katthya", "1:45:41"])
 #pruebas()
