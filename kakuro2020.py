@@ -9,7 +9,7 @@ import pickle # modulo para cargar datos
 import random
 import copy
 import webbrowser as wb
-from tkinter import Tk, Label, Button, Frame
+from tkinter import Tk, Label, Button
 from random import randint
 import winsound
 import os
